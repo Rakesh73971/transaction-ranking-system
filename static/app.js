@@ -24,6 +24,29 @@ function setText(node, value) {
   node.textContent = typeof value === "string" ? value : pretty(value);
 }
 
+function formatDateTime(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleString();
+}
+
+function clearNode(node) {
+  node.replaceChildren();
+}
+
+function createCell(text) {
+  const cell = document.createElement("td");
+  cell.textContent = text;
+  return cell;
+}
+
 function newKey() {
   return crypto.randomUUID();
 }
@@ -76,38 +99,34 @@ async function refreshSummary(userId) {
 async function refreshRanking() {
   const payload = await requestJson("/ranking?limit=10");
   const rows = payload.ranking || [];
-  rankingTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>User</th>
-          <th>Score</th>
-          <th>Points</th>
-          <th>Tx</th>
-          <th>Active Days</th>
-          <th>Last Activity</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows
-          .map(
-            (row, index) => `
-              <tr>
-                <td>${index + 1}</td>
-                <td>${row.userId}</td>
-                <td>${row.score.toFixed(2)}</td>
-                <td>${row.totalPoints}</td>
-                <td>${row.transactionCount}</td>
-                <td>${row.activeDays}</td>
-                <td>${row.lastTransactionAt || "-"}</td>
-              </tr>
-            `,
-          )
-          .join("")}
-      </tbody>
-    </table>
-  `;
+  clearNode(rankingTable);
+
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["Rank", "User", "Score", "Points", "Tx", "Active Days", "Last Activity"].forEach((label) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  const tbody = document.createElement("tbody");
+  rows.forEach((row, index) => {
+    const tr = document.createElement("tr");
+    tr.appendChild(createCell(String(index + 1)));
+    tr.appendChild(createCell(row.userId));
+    tr.appendChild(createCell(row.score.toFixed(2)));
+    tr.appendChild(createCell(String(row.totalPoints)));
+    tr.appendChild(createCell(String(row.transactionCount)));
+    tr.appendChild(createCell(String(row.activeDays)));
+    tr.appendChild(createCell(formatDateTime(row.lastTransactionAt)));
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  rankingTable.appendChild(table);
 }
 
 async function refreshDashboard() {
@@ -179,7 +198,11 @@ refreshRankingButton.addEventListener("click", async () => {
     await refreshRanking();
     markUpdated(`Ranking refreshed at ${new Date().toLocaleTimeString()}`);
   } catch (error) {
-    rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+    clearNode(rankingTable);
+    const errorBox = document.createElement("pre");
+    errorBox.className = "result";
+    errorBox.textContent = error.message;
+    rankingTable.appendChild(errorBox);
     markUpdated("Ranking refresh failed");
   } finally {
     setBusy(refreshRankingButton, false);
@@ -215,7 +238,11 @@ fairScoreChip.addEventListener("click", async () => {
     await refreshRanking();
     scrollToPanel(rankingPanel);
   } catch (error) {
-    rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+    clearNode(rankingTable);
+    const errorBox = document.createElement("pre");
+    errorBox.className = "result";
+    errorBox.textContent = error.message;
+    rankingTable.appendChild(errorBox);
     markUpdated("Ranking refresh failed");
   } finally {
     setBusy(refreshRankingButton, false);

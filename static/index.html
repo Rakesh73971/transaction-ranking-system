@@ -31,15 +31,15 @@
         <form id="transactionForm" class="form">
           <label>
             <span>User ID</span>
-            <input id="userId" name="userId" value="demo-alice" autocomplete="off" />
+            <input id="userId" name="userId" value="demo-alice" autocomplete="off" required minlength="2" maxlength="32" pattern="[A-Za-z0-9_-]+" />
           </label>
           <label>
             <span>Amount</span>
-            <input id="amount" name="amount" type="number" min="1" max="10000" value="45" />
+            <input id="amount" name="amount" type="number" min="1" max="10000" step="1" value="45" required />
           </label>
           <label>
             <span>Idempotency Key</span>
-            <input id="idempotencyKey" name="idempotencyKey" autocomplete="off" />
+            <input id="idempotencyKey" name="idempotencyKey" autocomplete="off" required minlength="8" maxlength="128" />
           </label>
           <label>
             <span>Note</span>
@@ -56,7 +56,7 @@
           <button id="loadSummary" class="ghost-button" type="button">Refresh</button>
         </div>
         <form id="summaryForm" class="inline-form">
-          <input id="summaryUserId" value="demo-alice" autocomplete="off" />
+          <input id="summaryUserId" value="demo-alice" autocomplete="off" required minlength="2" maxlength="32" pattern="[A-Za-z0-9_-]+" />
           <button class="primary-button" type="submit">Load summary</button>
         </form>
         <pre id="summaryResult" class="result"></pre>
