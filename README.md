@@ -142,18 +142,28 @@ Delete `data/ledger.db` if you want a fresh start.
 - For a heavier production system, I would replace it with PostgreSQL and move the ranking calculation into a dedicated read model or cache layer.
 - Ranking uses a capped transaction contribution to reduce manipulation, but a production system would likely add rate limits and abuse scoring as well.
 
-## Demo video outline
+## Submission Details
 
-For the required 3-5 minute screen recording, cover:
+- **Live URL**: [INSERT YOUR DEPLOYED LIVE URL HERE, e.g., https://your-app.onrender.com]
+- **Demo Video Walkthrough**: [INSERT YOUR 3-5 MINUTE VIDEO LINK HERE]
 
-1. What the app does and the three APIs it exposes.
-2. A live `POST /transaction` example.
-3. A `GET /summary/:userId` example.
-4. The ranking screen and why the score uses multiple factors.
-5. How idempotency and the SQLite transaction boundary prevent duplicate or inconsistent writes.
+---
 
-## Live URL
+## Security & Implementation Improvements
 
-When the server is running locally, open:
+The frontend was polished to meet security best practices:
+1. **DOM-based XSS Mitigation**: Dynamic rendering of user inputs (like `userId` and API errors) in the scoreboard is securely executed using `document.createElement` and `textContent` rather than interpolating strings inside `.innerHTML`.
+2. **Synchronized Form Validations**: The HTML input forms utilize browser-native validation matching the exact backend expectations (e.g., regex `pattern="[A-Za-z0-9_-]+"`, character limits, and integer-only amounts).
+3. **Locale Datetime Formatting**: Server ISO timestamps are formatted to the browser's local timezone.
 
-- `http://127.0.0.1:8000`
+## Demo Video Outline
+
+For the required 3-5 minute screen recording, we recommend covering:
+1. **Application Overview**: Brief walkthrough of the single-page interface and features.
+2. **API Flow demonstration**:
+   - Post a transaction with the form (explain how the UI generates unique UUIDs to prevent duplicate submissions).
+   - Show how the idempotency key works by resubmitting the form with the same key.
+   - Inspect a specific user's summary.
+3. **Multi-Factor Scoreboard**: Explain the ranking logic (bonuses for active days, transaction counts, recency, and the dominance penalty for single large transactions).
+4. **Concurrency & Data Consistency**: Highlight the use of SQLite's WAL mode and `BEGIN IMMEDIATE` transaction locking to guarantee serializability.
+
