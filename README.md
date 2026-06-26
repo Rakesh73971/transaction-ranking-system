@@ -144,8 +144,8 @@ Delete `data/ledger.db` if you want a fresh start.
 
 ## Submission Details
 
-- **Live URL**: [INSERT YOUR DEPLOYED LIVE URL HERE, e.g., https://your-app.onrender.com]
-- **Demo Video Walkthrough**: [INSERT YOUR 3-5 MINUTE VIDEO LINK HERE]
+- **Live URL**: [https://transaction-ranking-system-xb5m.onrender.com/](https://transaction-ranking-system-xb5m.onrender.com/)
+- **Demo Video Walkthrough**: [Google Drive Link](https://drive.google.com/file/d/1KOxNTi29Mb9WwxiuSgfxVskUC-nyfR2J/view?usp=drive_link)
 
 ---
 
