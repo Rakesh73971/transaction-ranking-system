@@ -36,6 +36,21 @@ function markUpdated(message) {
   lastUpdated.textContent = message;
 }
 
+function setBusy(button, isBusy, label) {
+  if (isBusy) {
+    button.disabled = true;
+    button.dataset.originalLabel = button.textContent;
+    button.textContent = label || "Loading...";
+    return;
+  }
+
+  button.disabled = false;
+  if (button.dataset.originalLabel) {
+    button.textContent = button.dataset.originalLabel;
+    delete button.dataset.originalLabel;
+  }
+}
+
 async function requestJson(url, options = {}) {
   const response = await fetch(url, {
     headers: {
@@ -146,18 +161,28 @@ summaryForm.addEventListener("submit", async (event) => {
 });
 
 loadSummaryButton.addEventListener("click", async () => {
+  setBusy(loadSummaryButton, true, "Refreshing...");
   try {
-    await refreshSummary(summaryUserIdInput.value.trim());
+    await refreshDashboard();
+    scrollToPanel(summaryPanel);
   } catch (error) {
     setText(summaryResult, { error: error.message });
+    markUpdated("Refresh failed");
+  } finally {
+    setBusy(loadSummaryButton, false);
   }
 });
 
 refreshRankingButton.addEventListener("click", async () => {
+  setBusy(refreshRankingButton, true, "Refreshing...");
   try {
     await refreshRanking();
+    markUpdated(`Ranking refreshed at ${new Date().toLocaleTimeString()}`);
   } catch (error) {
     rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+    markUpdated("Ranking refresh failed");
+  } finally {
+    setBusy(refreshRankingButton, false);
   }
 });
 
@@ -172,20 +197,28 @@ idempotencyChip.addEventListener("click", () => {
 });
 
 atomicChip.addEventListener("click", async () => {
+  setBusy(loadSummaryButton, true, "Refreshing...");
   try {
     await refreshDashboard();
     scrollToPanel(summaryPanel);
   } catch (error) {
     setText(summaryResult, { error: error.message });
+    markUpdated("Refresh failed");
+  } finally {
+    setBusy(loadSummaryButton, false);
   }
 });
 
 fairScoreChip.addEventListener("click", async () => {
+  setBusy(refreshRankingButton, true, "Refreshing...");
   try {
     await refreshRanking();
     scrollToPanel(rankingPanel);
   } catch (error) {
     rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+    markUpdated("Ranking refresh failed");
+  } finally {
+    setBusy(refreshRankingButton, false);
   }
 });
 
