@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Ledger Demo</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">FastAPI + SQLite demo</p>
+        <h1>Transaction Ledger</h1>
+        <p class="lede">Post a transaction, inspect a user summary, and compare fair rankings in one live view.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="badge">Idempotent writes</div>
+        <div class="badge">Atomic updates</div>
+        <div class="badge">Fair score</div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Submit Transaction</h2>
+          <button id="regenKey" class="ghost-button" type="button">Regenerate key</button>
+        </div>
+        <form id="transactionForm" class="form">
+          <label>
+            <span>User ID</span>
+            <input id="userId" name="userId" value="demo-alice" autocomplete="off" />
+          </label>
+          <label>
+            <span>Amount</span>
+            <input id="amount" name="amount" type="number" min="1" max="10000" value="45" />
+          </label>
+          <label>
+            <span>Idempotency Key</span>
+            <input id="idempotencyKey" name="idempotencyKey" autocomplete="off" />
+          </label>
+          <label>
+            <span>Note</span>
+            <input id="note" name="note" maxlength="120" placeholder="Optional memo" />
+          </label>
+          <button class="primary-button" type="submit">Record transaction</button>
+        </form>
+        <pre id="transactionResult" class="result"></pre>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>User Summary</h2>
+          <button id="loadSummary" class="ghost-button" type="button">Refresh</button>
+        </div>
+        <form id="summaryForm" class="inline-form">
+          <input id="summaryUserId" value="demo-alice" autocomplete="off" />
+          <button class="primary-button" type="submit">Load summary</button>
+        </form>
+        <pre id="summaryResult" class="result"></pre>
+      </section>
+
+      <section class="panel wide">
+        <div class="panel-head">
+          <h2>Ranking</h2>
+          <button id="refreshRanking" class="ghost-button" type="button">Refresh</button>
+        </div>
+        <div id="rankingTable" class="table-wrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
