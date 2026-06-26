@@ -3,11 +3,18 @@ const summaryForm = document.getElementById("summaryForm");
 const loadSummaryButton = document.getElementById("loadSummary");
 const refreshRankingButton = document.getElementById("refreshRanking");
 const regenKeyButton = document.getElementById("regenKey");
+const idempotencyChip = document.getElementById("idempotencyChip");
+const atomicChip = document.getElementById("atomicChip");
+const fairScoreChip = document.getElementById("fairScoreChip");
 const transactionResult = document.getElementById("transactionResult");
 const summaryResult = document.getElementById("summaryResult");
 const rankingTable = document.getElementById("rankingTable");
 const idempotencyKeyInput = document.getElementById("idempotencyKey");
 const summaryUserIdInput = document.getElementById("summaryUserId");
+const lastUpdated = document.getElementById("lastUpdated");
+const summaryPanel = summaryForm.closest(".panel");
+const rankingPanel = rankingTable.closest(".panel");
+const transactionPanel = transactionForm.closest(".panel");
 
 function pretty(value) {
   return JSON.stringify(value, null, 2);
@@ -19,6 +26,14 @@ function setText(node, value) {
 
 function newKey() {
   return crypto.randomUUID();
+}
+
+function scrollToPanel(panel) {
+  panel?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function markUpdated(message) {
+  lastUpdated.textContent = message;
 }
 
 async function requestJson(url, options = {}) {
@@ -80,6 +95,15 @@ async function refreshRanking() {
   `;
 }
 
+async function refreshDashboard() {
+  const userId = summaryUserIdInput.value.trim();
+  await Promise.all([
+    refreshSummary(userId),
+    refreshRanking(),
+  ]);
+  markUpdated(`Last refreshed at ${new Date().toLocaleTimeString()}`);
+}
+
 function ensureIdempotencyKey() {
   if (!idempotencyKeyInput.value.trim()) {
     idempotencyKeyInput.value = newKey();
@@ -105,6 +129,7 @@ transactionForm.addEventListener("submit", async (event) => {
     summaryUserIdInput.value = body.userId;
     await refreshSummary(body.userId);
     await refreshRanking();
+    markUpdated(`Last refreshed at ${new Date().toLocaleTimeString()}`);
     idempotencyKeyInput.value = newKey();
   } catch (error) {
     setText(transactionResult, { error: error.message });
@@ -140,13 +165,35 @@ regenKeyButton.addEventListener("click", () => {
   idempotencyKeyInput.value = newKey();
 });
 
+idempotencyChip.addEventListener("click", () => {
+  scrollToPanel(transactionPanel);
+  idempotencyKeyInput.focus();
+  idempotencyKeyInput.select();
+});
+
+atomicChip.addEventListener("click", async () => {
+  try {
+    await refreshDashboard();
+    scrollToPanel(summaryPanel);
+  } catch (error) {
+    setText(summaryResult, { error: error.message });
+  }
+});
+
+fairScoreChip.addEventListener("click", async () => {
+  try {
+    await refreshRanking();
+    scrollToPanel(rankingPanel);
+  } catch (error) {
+    rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+  }
+});
+
 idempotencyKeyInput.value = newKey();
 
 Promise.all([
-  refreshSummary(summaryUserIdInput.value.trim()).catch((error) => {
+  refreshDashboard().catch((error) => {
     setText(summaryResult, { error: error.message });
-  }),
-  refreshRanking().catch((error) => {
-    rankingTable.innerHTML = `<pre class="result">${error.message}</pre>`;
+    markUpdated("Live data unavailable");
   }),
 ]).catch(() => {});

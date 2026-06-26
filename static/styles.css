@@ -78,6 +78,33 @@ h1 {
   font-size: 0.93rem;
 }
 
+.badge-button {
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow);
+  font-size: 0.93rem;
+  color: var(--text);
+}
+
+.badge-button:hover,
+.badge-button:focus-visible {
+  border-color: rgba(15, 118, 110, 0.45);
+  transform: translateY(-1px);
+}
+
+.badge-button:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.18);
+  outline-offset: 2px;
+}
+
+.status-line {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -228,4 +255,3 @@ tbody tr:hover {
     justify-content: start;
   }
 }
-

@@ -13,11 +13,12 @@
         <p class="eyebrow">FastAPI + SQLite demo</p>
         <h1>Transaction Ledger</h1>
         <p class="lede">Post a transaction, inspect a user summary, and compare fair rankings in one live view.</p>
+        <p id="lastUpdated" class="status-line">Loading live data...</p>
       </div>
       <div class="hero-meta">
-        <div class="badge">Idempotent writes</div>
-        <div class="badge">Atomic updates</div>
-        <div class="badge">Fair score</div>
+        <button id="idempotencyChip" class="badge-button" type="button" title="Focus the transaction form and idempotency key">Idempotent writes</button>
+        <button id="atomicChip" class="badge-button" type="button" title="Refresh the summary and ranking views">Atomic updates</button>
+        <button id="fairScoreChip" class="badge-button" type="button" title="Jump to the ranking table and refresh it">Fair score</button>
       </div>
     </header>
 
